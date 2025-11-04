@@ -34,6 +34,8 @@ export interface Message {
   message_text?: string
   image_url?: string
   status?: 'sent' | 'delivered' | 'read'
+  is_deleted?: boolean
+  edited_at?: string
   created_at: string
   sender?: User
   receiver?: User
