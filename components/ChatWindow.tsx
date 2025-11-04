@@ -569,7 +569,8 @@ export default function ChatWindow({
                   email: '', 
                   username: '', 
                   full_name: '', 
-                  name: '' 
+                  name: '',
+                  created_at: new Date().toISOString()
                 }) 
               },
             })
