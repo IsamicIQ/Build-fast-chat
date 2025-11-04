@@ -564,14 +564,7 @@ export default function ChatWindow({
               event: 'typing',
               payload: { 
                 userId: currentUserId, 
-                userName: getUserDisplayName({ 
-                  id: currentUserId, 
-                  email: '', 
-                  username: '', 
-                  full_name: '', 
-                  name: '',
-                  created_at: new Date().toISOString()
-                }) 
+                userName: 'You' 
               },
             })
           }

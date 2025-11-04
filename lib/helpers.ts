@@ -3,7 +3,7 @@ import { User, Message } from './supabase'
 // Helper to get user display name
 export function getUserDisplayName(user: User | null | undefined): string {
   if (!user) return 'Unknown'
-  return user.name || user.full_name || user.username || user.email.split('@')[0]
+  return user.name || user.full_name || user.username || (user.email ? user.email.split('@')[0] : 'User')
 }
 
 // Helper to get user avatar URL
@@ -19,6 +19,6 @@ export function getMessageContent(message: Message): string {
 
 // Helper to check if message has image
 export function hasMessageImage(message: Message): boolean {
-  return !!(message.image_url || (message.message_type === 'image'))
+  return !!message.image_url
 }
 

@@ -16,13 +16,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // Types
 export interface User {
   id: string
-  email: string
+  email?: string
   name?: string
   full_name?: string
   username?: string
   avatar_url?: string
   profile_picture?: string
-  created_at: string
+  created_at?: string
 }
 
 export interface Message {
