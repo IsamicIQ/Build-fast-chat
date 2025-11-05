@@ -29,6 +29,20 @@ export default function AuthPage() {
     setLoading(true)
     setError('')
 
+    // Check if Supabase is configured
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    
+    if (!supabaseUrl || supabaseUrl.includes('placeholder') || !supabaseKey || supabaseKey.includes('placeholder')) {
+      setError('Supabase is not configured. Please check environment variables in Vercel.')
+      setLoading(false)
+      console.error('Environment variables:', {
+        url: supabaseUrl,
+        key: supabaseKey ? `${supabaseKey.substring(0, 20)}...` : 'missing'
+      })
+      return
+    }
+
     try {
       if (isSignUp) {
         // Ensure email has proper format for Supabase (add @test.com if needed)
