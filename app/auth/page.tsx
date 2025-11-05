@@ -74,19 +74,35 @@ export default function AuthPage() {
         if (data.user) {
           console.log('✅ User created:', data.user.id)
           
-          // Create basic user profile
-          const { error: profileError } = await supabase.from('users').insert({
-            id: data.user.id,
-            email: formattedEmail,
-            username: email.includes('@') ? email.split('@')[0] : email,
-            name: email.includes('@') ? email.split('@')[0] : email,
-          })
+          // Check if profile already exists (in case of previous failed signup)
+          const { data: existingProfile } = await supabase
+            .from('users')
+            .select('id')
+            .eq('id', data.user.id)
+            .single()
 
-          if (profileError) {
-            console.error('Profile insert error:', profileError)
-            setError(`Profile creation failed: ${profileError.message}. User created but profile failed.`)
-            setLoading(false)
-            return
+          if (!existingProfile) {
+            // Profile doesn't exist, create it
+            const { error: profileError } = await supabase.from('users').insert({
+              id: data.user.id,
+              email: formattedEmail,
+              username: email.includes('@') ? email.split('@')[0] : email,
+              name: email.includes('@') ? email.split('@')[0] : email,
+            })
+
+            if (profileError) {
+              console.error('Profile insert error:', profileError)
+              // If it's a duplicate key error, profile might already exist, try to continue
+              if (profileError.code === '23505' || profileError.message.includes('duplicate key')) {
+                console.log('Profile already exists, continuing...')
+              } else {
+                setError(`Profile creation failed: ${profileError.message}. User created but profile failed.`)
+                setLoading(false)
+                return
+              }
+            }
+          } else {
+            console.log('Profile already exists, skipping creation')
           }
 
           // If we have a session, great! If not, try to sign in
