@@ -69,14 +69,20 @@ export default function ChatList({
     }
 
     // Format conversations with the other user
-    const formatted = (data || []).map((conv: any) => {
-      const otherUser =
-        conv.user1_id === currentUserId ? conv.user2 : conv.user1
-      return {
-        ...conv,
-        otherUser,
-      }
-    })
+    const formatted = (data || [])
+      .filter((conv: any) => {
+        // Filter out conversations where user1 or user2 is null
+        const otherUser = conv.user1_id === currentUserId ? conv.user2 : conv.user1
+        return otherUser && otherUser.id
+      })
+      .map((conv: any) => {
+        const otherUser =
+          conv.user1_id === currentUserId ? conv.user2 : conv.user1
+        return {
+          ...conv,
+          otherUser,
+        }
+      })
 
     setConversations(formatted)
     setLoading(false)
@@ -169,27 +175,29 @@ export default function ChatList({
       ))}
 
       {/* Direct Chats */}
-      {conversations.map((conv) => (
-        <div
-          key={conv.id}
-          onClick={() => onSelectUser(conv.otherUser.id)}
-          className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${
-            selectedUserId === conv.otherUser.id ? 'bg-blue-50' : ''
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <UserAvatar user={conv.otherUser} size="lg" className="flex-shrink-0" />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold truncate">{getUserDisplayName(conv.otherUser)}</h3>
-                <span className="text-xs text-gray-500 flex-shrink-0 ml-2">
-                  {format(new Date(conv.last_message_at), 'HH:mm')}
-                </span>
+      {conversations
+        .filter((conv) => conv.otherUser && conv.otherUser.id)
+        .map((conv) => (
+          <div
+            key={conv.id}
+            onClick={() => onSelectUser(conv.otherUser.id)}
+            className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${
+              selectedUserId === conv.otherUser.id ? 'bg-blue-50' : ''
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <UserAvatar user={conv.otherUser} size="lg" className="flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold truncate">{getUserDisplayName(conv.otherUser)}</h3>
+                  <span className="text-xs text-gray-500 flex-shrink-0 ml-2">
+                    {format(new Date(conv.last_message_at), 'HH:mm')}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
     </div>
   )
 }
