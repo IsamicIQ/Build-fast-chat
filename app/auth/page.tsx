@@ -1,7 +1,5 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
@@ -53,7 +51,9 @@ export default function AuthPage() {
 
         if (signUpError) {
           console.error('Signup error:', signUpError)
-          throw signUpError
+          setError(`Signup failed: ${signUpError.message || JSON.stringify(signUpError)}`)
+          setLoading(false)
+          return
         }
 
         // Account created successfully!
@@ -69,7 +69,10 @@ export default function AuthPage() {
           })
 
           if (profileError) {
-            console.log('Profile insert error (might already exist):', profileError.message)
+            console.error('Profile insert error:', profileError)
+            setError(`Profile creation failed: ${profileError.message}. User created but profile failed.`)
+            setLoading(false)
+            return
           }
 
           // If we have a session, great! If not, try to sign in
